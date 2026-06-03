@@ -32,27 +32,29 @@ namespace Atualizador.Views
                                    .OrderByDescending(x => x.Value).ToList();
 
             var maxReg = byRegime.Any() ? byRegime.Max(x => x.Value) : 1;
-            IcRegime.ItemsSource = byRegime.Select(x => new { Label = x.Label, Value = x.Value, Height = 120.0 * x.Value / maxReg });
+            // usar escala fixa (MaxBarHeight) para uniformizar todos os gráficos
+            double maxBarHeight = 80.0;
+            IcRegime.ItemsSource = byRegime.Select(x => new { Label = x.Label, Value = x.Value, Height = maxBarHeight * x.Value / maxReg });
 
             var byUf = clientes.GroupBy(c => string.IsNullOrEmpty(c.Uf) ? "(sem)" : c.Uf)
                                .Select(g => new { Label = g.Key, Value = g.Count() })
                                .OrderByDescending(x => x.Value).ToList();
             var maxUf = byUf.Any() ? byUf.Max(x => x.Value) : 1;
-            IcUf.ItemsSource = byUf.Select(x => new { Label = x.Label, Value = x.Value, Height = 120.0 * x.Value / maxUf });
+            IcUf.ItemsSource = byUf.Select(x => new { Label = x.Label, Value = x.Value, Height = maxBarHeight * x.Value / maxUf });
 
             // comunicação
             var byCom = clientes.GroupBy(c => string.IsNullOrEmpty(c.Comunicacao) ? "NAO" : c.Comunicacao)
                                 .Select(g => new { Label = g.Key, Value = g.Count() })
                                 .OrderByDescending(x => x.Value).ToList();
             var maxCom = byCom.Any() ? byCom.Max(x => x.Value) : 1;
-            IcComunicacao.ItemsSource = byCom.Select(x => new { Label = x.Label, Value = x.Value, Height = 120.0 * x.Value / maxCom });
+            IcComunicacao.ItemsSource = byCom.Select(x => new { Label = x.Label, Value = x.Value, Height = maxBarHeight * x.Value / maxCom });
 
             var byData = clientes.Where(c => c.DataVersao != System.DateTime.MinValue)
                                  .GroupBy(c => new { c.DataVersao.Year, c.DataVersao.Month })
                                  .Select(g => new { Label = $"{g.Key.Month:00}/{g.Key.Year}", Value = g.Count() })
                                  .OrderBy(x => x.Label).ToList();
             var maxData = byData.Any() ? byData.Max(x => x.Value) : 1;
-            IcDataVersao.ItemsSource = byData.Select(x => new { Label = x.Label, Value = x.Value, Height = 120.0 * x.Value / maxData });
+            IcDataVersao.ItemsSource = byData.Select(x => new { Label = x.Label, Value = x.Value, Height = maxBarHeight * x.Value / maxData });
         }
     }
 }

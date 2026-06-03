@@ -5,160 +5,166 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Margin="14">
-        <TextBlock Text="Analítico - gráficos" FontSize="18" FontWeight="Bold" Margin="0,0,0,8" />
+	<Grid Margin="14">
+		<TextBlock Text="Painel Analítico" FontSize="18" FontWeight="Bold" Margin="0,0,0,8" />
 
-        <StackPanel Orientation="Vertical" Margin="0,20,0,0">
-            <TextBlock Text="Resumo" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,6" />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,12" HorizontalAlignment="Left">
-                <Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="Total de Lojas" FontWeight="SemiBold" FontSize="12" />
-                        <TextBlock x:Name="TbTotal" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-                <Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="Atualizadas" FontWeight="SemiBold" FontSize="12" />
-                        <TextBlock x:Name="TbAtualizadas" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-                <Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="Desatualizadas" FontWeight="SemiBold" FontSize="12" />
-                        <TextBlock x:Name="TbDesatualizadas" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+		<StackPanel Orientation="Vertical" Margin="0,20,0,0">
+			<TextBlock Text="Resumo" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,6" />
+			<StackPanel Orientation="Horizontal" Margin="0,0,0,12" HorizontalAlignment="Left">
+				<Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock Text="Total de Lojas" FontWeight="SemiBold" FontSize="12" />
+						<TextBlock x:Name="TbTotal" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+					</StackPanel>
+				</Border>
+				<Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock Text="Atualizadas" FontWeight="SemiBold" FontSize="12" />
+						<TextBlock x:Name="TbAtualizadas" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+					</StackPanel>
+				</Border>
+				<Border Width="200" Height="100" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Padding="10" CornerRadius="6">
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock Text="Desatualizadas" FontWeight="SemiBold" FontSize="12" />
+						<TextBlock x:Name="TbDesatualizadas" Text="0" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+					</StackPanel>
+				</Border>
+			</StackPanel>
 
-            <TextBlock Text="Gráficos" FontWeight="SemiBold" FontSize="14" Margin="0,8,0,6" />
+			<TextBlock Text="Gráficos" FontWeight="SemiBold" FontSize="14" Margin="0,8,0,6" />
 
-            <Grid Margin="0,6,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+			<Grid Margin="0,6,0,0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
 
-                <!-- Regime -->
-                <Border Grid.Row="0" Grid.Column="0" Height="150" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="0,0,8,12" Padding="8" CornerRadius="6">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Regime Tributário" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
-                            <ItemsControl x:Name="IcRegime">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Width="80" Margin="6,0" HorizontalAlignment="Center">
-                                            <Rectangle Height="{Binding Height}" Width="40" Fill="#4CAF50" VerticalAlignment="Bottom" />
-                                            <TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
-                                            <TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
+				<!-- Regime -->
+				<Border Grid.Row="0" Grid.Column="0" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="0,14,0,56" Padding="8" CornerRadius="6">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="19*"/>
+							<ColumnDefinition Width="109*"/>
+							<ColumnDefinition Width="154*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="21*" />
+							<RowDefinition Height="151*"/>
+						</Grid.RowDefinitions>
+						<TextBlock Text="Regime Tributário" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" Grid.ColumnSpan="3" />
+						<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1" Margin="0,0,0,-32" Grid.RowSpan="2" Grid.ColumnSpan="3">
+							<ItemsControl x:Name="IcRegime" Height="188" Width="256" Margin="0,10,0,6">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" Height="100" Width="268" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Width="80" Margin="6,0" HorizontalAlignment="Center">
+											<Rectangle Height="{Binding Height}" Width="40" Fill="#4CAF50" VerticalAlignment="Bottom" />
+											<TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
+											<TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Grid>
+				</Border>
 
-                <!-- UF -->
-                <Border Grid.Row="0" Grid.Column="1" Height="150" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="8,0,0,12" Padding="8" CornerRadius="6">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="UF" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
-                            <ItemsControl x:Name="IcUf">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Width="60" Margin="6,0" HorizontalAlignment="Center">
-                                            <Rectangle Height="{Binding Height}" Width="30" Fill="#2196F3" VerticalAlignment="Bottom" />
-                                            <TextBlock Text="{Binding Label}" TextAlignment="Center" FontSize="11" Margin="0,6,0,0" />
-                                            <TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
+				<!-- UF -->
+				<Border Grid.Row="0" Grid.Column="1" Height="250" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="8,0,0,12" Padding="8" CornerRadius="6">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="210.04" />
+						</Grid.RowDefinitions>
+						<TextBlock Text="UF" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
+						<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
+							<ItemsControl x:Name="IcUf" Height="168" Width="264">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Width="60" Margin="6,0" HorizontalAlignment="Center">
+											<Rectangle Height="{Binding Height}" Width="30" Fill="#2196F3" VerticalAlignment="Bottom" />
+											<TextBlock Text="{Binding Label}" TextAlignment="Center" FontSize="11" Margin="0,6,0,0" />
+											<TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Grid>
+				</Border>
 
-                <!-- Data Versao -->
-                <Border Grid.Row="1" Grid.Column="0" Height="150" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="0,0,8,0" Padding="8" CornerRadius="6">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Data Versão (mês/ano)" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
-                            <ItemsControl x:Name="IcDataVersao">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Width="90" Margin="6,0" HorizontalAlignment="Center">
-                                            <Rectangle Height="{Binding Height}" Width="50" Fill="#FF9800" VerticalAlignment="Bottom" />
-                                            <TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
-                                            <TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
+				<!-- Data Versao -->
+				<Border Grid.Row="1" Grid.Column="0" Height="250" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="0,0,8,0" Padding="8" CornerRadius="6">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<TextBlock Text="Data Versão (mês/ano)" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
+						<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
+							<ItemsControl x:Name="IcDataVersao" Height="145" Width="264">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Width="90" Margin="6,0" HorizontalAlignment="Center">
+											<Rectangle Height="{Binding Height}" Width="50" Fill="#FF9800" VerticalAlignment="Bottom" />
+											<TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
+											<TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Grid>
+				</Border>
 
-                <!-- Comunicacao -->
-                <Border Grid.Row="1" Grid.Column="1" Height="150" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="8,0,0,0" Padding="8" CornerRadius="6">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Comunicação" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
-                            <ItemsControl x:Name="IcComunicacao">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Width="80" Margin="6,0" HorizontalAlignment="Center">
-                                            <Rectangle Height="{Binding Height}" Width="40" Fill="#9C27B0" VerticalAlignment="Bottom" />
-                                            <TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
-                                            <TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </Grid>
-        </StackPanel>
-    </Grid>
+				<!-- Comunicacao -->
+				<Border Grid.Row="1" Grid.Column="1" Height="250" Background="#FFF" BorderBrush="#DDD" BorderThickness="1" Margin="8,0,0,0" Padding="8" CornerRadius="6">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<TextBlock Text="Comunicação" FontWeight="SemiBold" Margin="0,0,0,6" Grid.Row="0" />
+						<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Row="1">
+							<ItemsControl x:Name="IcComunicacao" Height="155" Width="264">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Width="80" Margin="6,0" HorizontalAlignment="Center">
+											<Rectangle Height="{Binding Height}" Width="40" Fill="#9C27B0" VerticalAlignment="Bottom" />
+											<TextBlock Text="{Binding Label}" TextAlignment="Center" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0" />
+											<TextBlock Text="{Binding Value}" FontWeight="Bold" FontSize="12" TextAlignment="Center" />
+										</StackPanel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Grid>
+				</Border>
+			</Grid>
+		</StackPanel>
+	</Grid>
 </UserControl>
