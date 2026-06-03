@@ -19,5 +19,10 @@ namespace Atualizador
         {
             ContentArea.Content = new EmpresasView();
         }
+
+        private void BtnAnaliticoMain_Click(object sender, RoutedEventArgs e)
+        {
+            ContentArea.Content = new AnaliticoView();
+        }
     }
 }

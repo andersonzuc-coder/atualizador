@@ -24,6 +24,7 @@ namespace Atualizador.Models
         public DateTime DataVersao { get; set; }
         public string Cnpj { get; set; }
         public string Uf { get; set; }
-        public byte Comunicacao { get; set; }
+        // agora armazena "SIM" / "NAO"
+        public string Comunicacao { get; set; }
     }
 }

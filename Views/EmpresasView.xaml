@@ -8,6 +8,7 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -19,8 +20,11 @@
                     <TextBlock Text="Buscar (nome):" VerticalAlignment="Center" Margin="4" FontWeight="SemiBold" />
                     <TextBox x:Name="TbSearch" Width="240" Margin="4" VerticalAlignment="Center" ToolTip="Pesquisar por nome" FontSize="13" Height="26" />
 
-                    <TextBlock Text="Empresa:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="CbEmpresa" Width="200" Margin="4" Height="26" />
+                    <StackPanel Margin="12,4,4,4">
+                        <TextBlock Text="Empresa:" FontWeight="SemiBold" />
+                        <ComboBox x:Name="CbEmpresa" Width="200" Margin="4" Height="26" />
+
+                    </StackPanel>
 
                     <TextBlock Text="Regime:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
                     <ComboBox x:Name="CbRegime" Width="200" Margin="4" Height="26" />
@@ -41,7 +45,50 @@
             </DockPanel>
         </Border>
 
-        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None" Margin="0,4,0,4" CanUserAddRows="False" RowHeight="28">
+            <Border Grid.Row="1" Margin="0,0,0,8">
+            <Border Background="#FAFAFA" BorderBrush="#EEE" BorderThickness="1" CornerRadius="4" Padding="8">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                        <Button x:Name="BtnNovo" Content="Novo" Width="90" Margin="4" Click="BtnNovo_Click" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Código" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <TextBox x:Name="TxtNovoCodigo" Width="80" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Razão Social" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <TextBox x:Name="TxtNovoRazao" Width="260" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="CNPJ" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <TextBox x:Name="TxtNovoCnpj" Width="180" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="UF" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <ComboBox x:Name="CbNovoUf" Width="80" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Regime" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <ComboBox x:Name="CbNovoRegime" Width="200" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Comunicação" FontWeight="SemiBold" FontSize="12" Margin="4,0" />
+                        <ComboBox x:Name="CbNovoComunicacao" Width="100" Margin="4" IsEnabled="False" />
+                    </StackPanel>
+
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal">
+                        <Button x:Name="BtnSalvarNovo" Content="Salvar" Width="120" Margin="8,4,4,4" IsEnabled="False" Click="BtnSalvarNovo_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="2" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None" Margin="0,4,0,4" CanUserAddRows="False" RowHeight="28">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" SortMemberPath="Codigo" FontSize="14" Width="80"/>
                 <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" SortMemberPath="Nome" FontSize="14" Width="300" />
@@ -59,8 +106,7 @@
                 <DataGridTextColumn Header="Data Versão" Binding="{Binding DataVersao, StringFormat={}{0:dd/MM/yyyy HH:mm}}" SortMemberPath="DataVersao" Width="160" />
             </DataGrid.Columns>
         </DataGrid>
-
-        <DockPanel Grid.Row="2" LastChildFill="False" Margin="0,8,0,0">
+        <DockPanel Grid.Row="3" LastChildFill="False" Margin="0,8,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" DockPanel.Dock="Left">
                 <Button x:Name="BtnPrev" Content="◀ Anterior" Height="32" Width="100" Margin="0,0,8,0" Click="BtnPrev_Click"/>
                 <TextBlock x:Name="TbPagina" VerticalAlignment="Center" Margin="0,0,8,0" />

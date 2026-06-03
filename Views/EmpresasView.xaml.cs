@@ -29,6 +29,21 @@ namespace Atualizador.Views
             InitializeComponent();
             Carregar();
             InicializarFiltros();
+            InicializarNovoRegistro();
+        }
+
+        private void InicializarNovoRegistro()
+        {
+            var ufs = new List<string> { "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO" };
+            CbNovoUf.ItemsSource = ufs;
+
+            CbNovoRegime.ItemsSource = new List<string> { "Simples Nacional", "Simples Nacional Excedido", "Lucro Presumido", "Lucro Real" };
+            // proteger caso controle não exista
+            if (this.FindName("CbNovoComunicacao") is System.Windows.Controls.ComboBox cbCom)
+            {
+                cbCom.ItemsSource = new List<string> { "SIM", "NAO" };
+                cbCom.SelectedIndex = 1; // NAO por padrão
+            }
         }
 
         private void Carregar()
@@ -188,6 +203,10 @@ namespace Atualizador.Views
 
         private void BtnAtualizar_Click(object sender, RoutedEventArgs e)
         {
+            // garantir commit das edições na grid (checkboxes) antes de ler os valores
+            GridClientes.CommitEdit(DataGridEditingUnit.Cell, true);
+            GridClientes.CommitEdit(DataGridEditingUnit.Row, true);
+
             var clientes = GridClientes.ItemsSource as List<Cliente>;
 
             if (clientes == null)
@@ -203,19 +222,24 @@ namespace Atualizador.Views
                 return;
             }
 
+            // sempre gravar estado dos checkboxes (Admin, Caixa, Copy, Conect) para cada cliente visível
             foreach (var cliente in clientes)
             {
-                // atualizar apenas clientes com pelo menos um checkbox marcado
+                // se algum checkbox marcado, definir data_atualizacao agora, caso contrário manter nulo
                 if (cliente.Admin || cliente.Caixa || cliente.Copy || cliente.Conect)
-                {
                     cliente.DataAtualizacao = DateTime.Now;
-                    db.AtualizarCliente(cliente);
+                else
+                    cliente.DataAtualizacao = DateTime.MinValue; // será gravado como NULL
 
-                    // gravar data_versao baseada no arquivo correspondente na pasta raiz
-                    var fileDate = GetFileModificationDateForClient(config.PastaRaiz, cliente);
-                    cliente.DataVersao = fileDate == DateTime.MinValue ? DateTime.Now : fileDate;
-                    db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
-                }
+                db.AtualizarCliente(cliente);
+            }
+
+            // gravar data_versao apenas para os que têm algum checkbox marcado
+            foreach (var cliente in clientes.Where(c => c.Admin || c.Caixa || c.Copy || c.Conect))
+            {
+                var fileDate = GetFileModificationDateForClient(config.PastaRaiz, cliente);
+                cliente.DataVersao = fileDate == DateTime.MinValue ? DateTime.Now : fileDate;
+                db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
             }
 
             // 🔹 executa atualização
@@ -239,6 +263,82 @@ namespace Atualizador.Views
         private void BtnAplicarFiltros_Click(object sender, RoutedEventArgs e)
         {
             AplicarFiltros();
+        }
+
+        private void BtnAnalitico_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // abrir view analítico em nova janela simples
+            var wnd = new System.Windows.Window()
+            {
+                Title = "Analítico",
+                Width = 800,
+                Height = 900,
+                Content = new AnaliticoView()
+            };
+            wnd.Show();
+        }
+
+        private void BtnNovo_Click(object sender, RoutedEventArgs e)
+        {
+            // habilitar campos para novo registro
+            // permitir preenchimento manual do código
+            TxtNovoCodigo.IsEnabled = true;
+            TxtNovoRazao.IsEnabled = true;
+            TxtNovoCnpj.IsEnabled = true;
+            CbNovoUf.IsEnabled = true;
+            CbNovoRegime.IsEnabled = true;
+            if (this.FindName("CbNovoComunicacao") is System.Windows.Controls.ComboBox cbCom2)
+                cbCom2.IsEnabled = true;
+            BtnSalvarNovo.IsEnabled = true;
+        }
+
+        private void BtnSalvarNovo_Click(object sender, RoutedEventArgs e)
+        {
+            // validar e inserir no banco
+            int codigo;
+            if (!int.TryParse(TxtNovoCodigo.Text, out codigo))
+            {
+                MessageBox.Show("Código inválido");
+                return;
+            }
+
+            var novo = new Cliente
+            {
+                Codigo = codigo,
+                Nome = TxtNovoRazao.Text,
+                Cnpj = TxtNovoCnpj.Text,
+                Uf = CbNovoUf.SelectedItem as string,
+                Regime_Tributario = CbNovoRegime.SelectedItem as string,
+                Comunicacao = (this.FindName("CbNovoComunicacao") as System.Windows.Controls.ComboBox)?.SelectedItem as string
+            };
+
+            // inserir diretamente via Database
+            try
+            {
+                db.InserirCliente(novo);
+                MessageBox.Show("Loja inserida com sucesso");
+                // resetar campos e recarregar
+                TxtNovoCodigo.Text = string.Empty;
+                TxtNovoRazao.Text = string.Empty;
+                TxtNovoCnpj.Text = string.Empty;
+                CbNovoUf.SelectedIndex = -1;
+                CbNovoRegime.SelectedIndex = -1;
+                if (this.FindName("CbNovoComunicacao") is System.Windows.Controls.ComboBox cbComReset)
+                    cbComReset.SelectedIndex = 1; // NAO
+                TxtNovoCodigo.IsEnabled = false;
+                TxtNovoRazao.IsEnabled = false;
+                TxtNovoCnpj.IsEnabled = false;
+                CbNovoUf.IsEnabled = false;
+                CbNovoRegime.IsEnabled = false;
+                if (this.FindName("CbNovoComunicacao") is System.Windows.Controls.ComboBox cbComReset3)
+                    cbComReset3.IsEnabled = false;
+                BtnSalvarNovo.IsEnabled = false;
+                Carregar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao inserir: " + ex.Message);
+            }
         }
 
         private void BtnLimparFiltros_Click(object sender, RoutedEventArgs e)

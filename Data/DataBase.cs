@@ -38,13 +38,13 @@ namespace Atualizador.Data
                             DataVersao = ParseSafeDate(reader, "data_versao"),
                             Cnpj = reader["Cnpj"] != DBNull.Value ? reader["Cnpj"].ToString() : string.Empty,
                             Uf = reader["Uf"] != DBNull.Value ? reader["Uf"].ToString() : string.Empty,
-                            Comunicacao = reader["Comunicacao"] != DBNull.Value ? Convert.ToByte(reader["Comunicacao"]) : (byte)0
+                            Comunicacao = reader["Comunicacao"] != DBNull.Value ? reader["Comunicacao"].ToString() : "NAO"
                         });
                     }
                 }
-            }
 
-            return lista;
+                return lista;
+            }
         }
 
         private DateTime ParseSafeDate(MySqlDataReader reader, string field)
@@ -70,30 +70,53 @@ namespace Atualizador.Data
             }
         }
 
+        public void InserirCliente(Cliente c)
+        {
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO cliente (Codigo, Nome, Cnpj, Uf, Regime_Tributario, Comunicacao) 
+                               VALUES (@Codigo, @Nome, @Cnpj, @Uf, @Regime, @Comunicacao)";
+                var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Codigo", c.Codigo);
+                cmd.Parameters.AddWithValue("@Nome", c.Nome ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Cnpj", c.Cnpj ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Uf", c.Uf ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Regime", c.Regime_Tributario ?? string.Empty);
+                cmd.Parameters.AddWithValue("@Comunicacao", string.IsNullOrEmpty(c.Comunicacao) ? "NAO" : c.Comunicacao);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public void AtualizarCliente(Cliente c)
         {
             using (var conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
+                // montar UPDATE sem atribuir data_atualizacao quando não houver data (evita tentar gravar NULL em coluna NOT NULL)
+                bool temData = c.DataAtualizacao != DateTime.MinValue;
+                var sb = new System.Text.StringBuilder();
+                sb.Append("UPDATE cliente SET ");
+                sb.Append("Admin = @Admin, ");
+                sb.Append("Caixa = @Caixa, ");
+                sb.Append("Copy = @Copy, ");
+                sb.Append("Conect = @Conect, ");
+                sb.Append("Regime_Tributario = @Regime_tributario, ");
+                if (temData)
+                    sb.Append("data_atualizacao = @DataAtualizacao, ");
+                sb.Append("Comunicacao = @Comunicacao ");
+                sb.Append("WHERE Codigo = @Codigo");
 
-                string sql = @"UPDATE cliente SET 
-                        Admin = @Admin,
-                        Caixa = @Caixa,
-                        Copy = @Copy,
-                        Conect = @Conect,
-                        Regime_Tributario = @Regime_tributario,
-                        data_atualizacao = @DataAtualizacao
-                       WHERE Codigo = @Codigo";
-
-                var cmd = new MySqlCommand(sql, conn);
-
+                var cmd = new MySqlCommand(sb.ToString(), conn);
                 cmd.Parameters.AddWithValue("@Admin", c.Admin);
                 cmd.Parameters.AddWithValue("@Caixa", c.Caixa);
                 cmd.Parameters.AddWithValue("@Copy", c.Copy);
                 cmd.Parameters.AddWithValue("@Conect", c.Conect);
                 cmd.Parameters.AddWithValue("@Codigo", c.Codigo);
-                cmd.Parameters.AddWithValue("@Regime_tributario", c.Regime_Tributario);
-                cmd.Parameters.AddWithValue("@DataAtualizacao", c.DataAtualizacao == DateTime.MinValue ? (object)DBNull.Value : c.DataAtualizacao);
+                cmd.Parameters.AddWithValue("@Regime_tributario", c.Regime_Tributario ?? string.Empty);
+                if (temData)
+                    cmd.Parameters.AddWithValue("@DataAtualizacao", c.DataAtualizacao);
+                cmd.Parameters.AddWithValue("@Comunicacao", string.IsNullOrEmpty(c.Comunicacao) ? "NAO" : c.Comunicacao);
 
                 cmd.ExecuteNonQuery();
             }
