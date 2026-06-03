@@ -16,12 +16,14 @@
         <Border Grid.Row="0" Padding="8" Margin="0,0,0,8" Background="#FFF" CornerRadius="6" BorderBrush="#DDD" BorderThickness="1">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Top">
-                    <TextBox x:Name="TbSearch" Width="300" Margin="4" VerticalAlignment="Center" ToolTip="Pesquisar por nome" FontSize="13" />
+                    <TextBlock Text="Buscar (nome):" VerticalAlignment="Center" Margin="4" FontWeight="SemiBold" />
+                    <TextBox x:Name="TbSearch" Width="240" Margin="4" VerticalAlignment="Center" ToolTip="Pesquisar por nome" FontSize="13" Height="26" />
+
                     <TextBlock Text="Empresa:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="CbEmpresa" Width="220" Margin="4" />
+                    <ComboBox x:Name="CbEmpresa" Width="200" Margin="4" Height="26" />
 
                     <TextBlock Text="Regime:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                    <ListBox x:Name="LbRegimes" Width="220" Height="80" Margin="4" SelectionMode="Multiple" />
+                    <ComboBox x:Name="CbRegime" Width="200" Margin="4" Height="26" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,8,0,0">
@@ -36,7 +38,7 @@
             </DockPanel>
         </Border>
 
-        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None" Margin="0,4,0,4">
+        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None" Margin="0,4,0,4" CanUserAddRows="False" RowHeight="28">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" SortMemberPath="Codigo" FontSize="14" Width="80"/>
                 <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" SortMemberPath="Nome" FontSize="14" Width="400" />

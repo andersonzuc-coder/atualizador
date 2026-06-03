@@ -44,9 +44,15 @@ namespace Atualizador.Views
             CbEmpresa.ItemsSource = _clientes;
             CbEmpresa.DisplayMemberPath = "Nome";
 
-            // popular regimes únicos
-            var regimes = _clientes.Select(c => c.Regime_Tributario).Where(r => !string.IsNullOrEmpty(r)).Distinct().OrderBy(r => r).ToList();
-            LbRegimes.ItemsSource = regimes;
+            // popular regimes fixos
+            var regimesFixos = new List<string> {
+                "Simples Nacional",
+                "Simples Nacional Excedido",
+                "Lucro Presumido",
+                "Lucro Real"
+            };
+            CbRegime.ItemsSource = regimesFixos;
+            CbRegime.SelectedIndex = -1;
 
             DpFrom.SelectedDate = null;
             DpTo.SelectedDate = null;
@@ -70,11 +76,10 @@ namespace Atualizador.Views
                 lista = lista.Where(c => c.Codigo == selEmpresa.Codigo);
             }
 
-            // regimes selecionados (multi-select)
-            var regimesSel = LbRegimes.SelectedItems.Cast<string>().ToList();
-            if (regimesSel.Any())
+            // regime selecionado
+            if (CbRegime.SelectedItem is string regimeSel)
             {
-                lista = lista.Where(c => regimesSel.Contains(c.Regime_Tributario));
+                lista = lista.Where(c => c.Regime_Tributario == regimeSel);
             }
 
             if (DpFrom.SelectedDate.HasValue)
@@ -97,7 +102,8 @@ namespace Atualizador.Views
         private void LimparFiltros()
         {
             CbEmpresa.SelectedIndex = -1;
-            LbRegimes.SelectedItems.Clear();
+            // limpar seleção do regime
+            CbRegime.SelectedIndex = -1;
             TbSearch.Text = string.Empty;
             DpFrom.SelectedDate = null;
             DpTo.SelectedDate = null;
@@ -150,8 +156,8 @@ namespace Atualizador.Views
             var lista = _clientes.AsEnumerable();
             if (!string.IsNullOrEmpty(termo)) lista = lista.Where(c => c.Nome != null && c.Nome.IndexOf(termo, StringComparison.OrdinalIgnoreCase) >= 0);
             if (CbEmpresa.SelectedItem is Cliente selEmpresa) lista = lista.Where(c => c.Codigo == selEmpresa.Codigo);
-            var regimesSel = LbRegimes.SelectedItems.Cast<string>().ToList();
-            if (regimesSel.Any()) lista = lista.Where(c => regimesSel.Contains(c.Regime_Tributario));
+            // regime selection for pagination reapply
+            if (CbRegime.SelectedItem is string regimeSel2) lista = lista.Where(c => c.Regime_Tributario == regimeSel2);
             if (DpFrom.SelectedDate.HasValue) lista = lista.Where(c => c.Data >= DpFrom.SelectedDate.Value);
             if (DpTo.SelectedDate.HasValue) lista = lista.Where(c => c.Data <= DpTo.SelectedDate.Value);
 
