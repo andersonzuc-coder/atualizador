@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -193,6 +194,15 @@ namespace Atualizador.Views
                 return;
 
 
+            var configService = new ConfigService();
+            var config = configService.Carregar();
+
+            if (string.IsNullOrEmpty(config.PastaRaiz) || string.IsNullOrEmpty(config.PastaNuvem))
+            {
+                MessageBox.Show("Configure os caminhos primeiro!");
+                return;
+            }
+
             foreach (var cliente in clientes)
             {
                 // atualizar apenas clientes com pelo menos um checkbox marcado
@@ -208,25 +218,8 @@ namespace Atualizador.Views
                 }
             }
 
-
-            var configService = new ConfigService();
-            var config = configService.Carregar();
-
-            if (string.IsNullOrEmpty(config.PastaRaiz) || string.IsNullOrEmpty(config.PastaNuvem))
-            {
-                MessageBox.Show("Configure os caminhos primeiro!");
-                return;
-            }
-
             // 🔹 executa atualização
             service.AtualizarClientes(clientes, config.PastaRaiz, config.PastaNuvem);
-
-            // após execução, gravar data_versao baseado na pasta versao raiz
-            foreach (var cliente in clientes)
-            {
-                cliente.DataVersao = GetExeVersionFileDate(config.PastaRaiz);
-                db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
-            }
             MessageBox.Show("Atualização enviada com sucesso!");
 
             // recarregar informações novas após a atualização
@@ -276,6 +269,7 @@ namespace Atualizador.Views
         {
             try
             {
+                Debug.WriteLine($"GetFileModificationDateForClient: pastaRaiz='{pastaRaiz}', cliente={cliente?.Codigo}");
                 if (string.IsNullOrEmpty(pastaRaiz)) return DateTime.MinValue;
 
                 // nomes correspondentes aos checkboxes esperados
@@ -292,6 +286,7 @@ namespace Atualizador.Views
                 {
                     // procurar arquivos no diretório raiz que contenham o sufixo _{name} ou terminem com {name}
                     var files = System.IO.Directory.GetFiles(pastaRaiz);
+                    Debug.WriteLine($"Procurando arquivos para token '{item.Name}' - total encontrados na pasta: {files.Length}");
                     foreach (var f in files)
                     {
                         var name = System.IO.Path.GetFileNameWithoutExtension(f);
@@ -301,12 +296,16 @@ namespace Atualizador.Views
                     }
                 }
 
+                Debug.WriteLine($"Candidates encontrados: {candidates.Count}");
+
                 if (!candidates.Any())
                 {
                     // se não encontrou nenhum arquivo correspondente, tentar pegar qualquer exe na pasta raiz
                     var exes = System.IO.Directory.GetFiles(pastaRaiz, "*.exe");
+                    Debug.WriteLine($"Nenhum candidate; exes na pasta: {exes.Length}");
                     if (!exes.Any()) return DateTime.MinValue;
                     var latestExe = exes.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
+                    Debug.WriteLine($"Usando exe mais recente: {latestExe} -> {System.IO.File.GetLastWriteTime(latestExe)}");
                     return System.IO.File.GetLastWriteTime(latestExe);
                 }
 
