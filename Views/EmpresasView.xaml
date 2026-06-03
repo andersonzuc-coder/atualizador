@@ -12,44 +12,55 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- filtros -->
+        <!-- filtros principais -->
         <Border Grid.Row="0" Padding="8" Margin="0,0,0,8" Background="#FFF" CornerRadius="6" BorderBrush="#DDD" BorderThickness="1">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"  >
-                <TextBlock Text="Empresa:" VerticalAlignment="Center" Margin="4" FontWeight="SemiBold"/>
-                <ComboBox x:Name="CbEmpresa" Width="220" Margin="4" />
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Top">
+                    <TextBox x:Name="TbSearch" Width="300" Margin="4" VerticalAlignment="Center" PlaceholderText="Pesquisar por nome..." />
+                    <TextBlock Text="Empresa:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="CbEmpresa" Width="220" Margin="4" />
 
-                <TextBlock Text="Regime Tributário:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                <ComboBox x:Name="CbRegime" Width="200" Margin="4" />
+                    <TextBlock Text="Regime:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
+                    <ListBox x:Name="LbRegimes" Width="220" Height="80" Margin="4" SelectionMode="Multiple" />
+                </StackPanel>
 
-                <TextBlock Text="Data Início:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                <DatePicker x:Name="DpFrom" Width="140" Margin="4" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,8,0,0">
+                    <TextBlock Text="Período:" VerticalAlignment="Center" Margin="4" FontWeight="SemiBold"/>
+                    <DatePicker x:Name="DpFrom" Width="140" Margin="4" />
+                    <TextBlock Text="a" VerticalAlignment="Center" Margin="4"/> 
+                    <DatePicker x:Name="DpTo" Width="140" Margin="4" />
 
-                <TextBlock Text="Data Fim:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
-                <DatePicker x:Name="DpTo" Width="140" Margin="4" />
-
-                <Button x:Name="BtnAplicarFiltros" Content="Aplicar" Margin="12,4,4,4" Padding="8,4" Click="BtnAplicarFiltros_Click"/>
-                <Button x:Name="BtnLimparFiltros" Content="Limpar" Margin="4" Padding="8,4" Click="BtnLimparFiltros_Click"/>
-            </StackPanel>
+                    <Button x:Name="BtnAplicarFiltros" Content="Aplicar" Margin="12,4,4,4" Padding="8,4" Click="BtnAplicarFiltros_Click"/>
+                    <Button x:Name="BtnLimparFiltros" Content="Limpar" Margin="4" Padding="8,4" Click="BtnLimparFiltros_Click"/>
+                </StackPanel>
+            </DockPanel>
         </Border>
 
-        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged">
+        <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" FontSize="16"/>
-                <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="1250" FontSize="16"  />
+                <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" SortMemberPath="Codigo" FontSize="14" Width="80"/>
+                <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" SortMemberPath="Nome" FontSize="14" Width="400" />
 
-                <DataGridCheckBoxColumn Header="Admin" Binding="{Binding Admin}" />
-                <DataGridCheckBoxColumn Header="Caixa" Binding="{Binding Caixa}" />
-                <DataGridCheckBoxColumn Header="Copy" Binding="{Binding Copy}" />
-                <DataGridCheckBoxColumn Header="Conect" Binding="{Binding Conect}" />
-                <DataGridTextColumn Header="Regime_Tributario" Binding="{Binding Regime_Tributario}" />
-                <DataGridTextColumn Header="Data" Binding="{Binding Data}" />
-                
+                <DataGridCheckBoxColumn Header="Admin" Binding="{Binding Admin}" SortMemberPath="Admin" />
+                <DataGridCheckBoxColumn Header="Caixa" Binding="{Binding Caixa}" SortMemberPath="Caixa" />
+                <DataGridCheckBoxColumn Header="Copy" Binding="{Binding Copy}" SortMemberPath="Copy" />
+                <DataGridCheckBoxColumn Header="Conect" Binding="{Binding Conect}" SortMemberPath="Conect" />
+                <DataGridTextColumn Header="Regime" Binding="{Binding Regime_Tributario}" SortMemberPath="Regime_Tributario" Width="160" />
+                <DataGridTextColumn Header="Data" Binding="{Binding Data, StringFormat=d}" SortMemberPath="Data" Width="120" />
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-            <Button Content="Excluir" Height="36" Width="120" Margin="0,0,8,0" Click="BtnExcluir_Click" FontSize="14" />
-            <Button Content="Atualizar" Height="36" Width="140" Click="BtnAtualizar_Click" FontSize="14" />
-        </StackPanel>
+        <DockPanel Grid.Row="2" LastChildFill="False" Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" DockPanel.Dock="Left">
+                <Button x:Name="BtnPrev" Content="◀ Anterior" Height="32" Width="100" Margin="0,0,8,0" Click="BtnPrev_Click"/>
+                <TextBlock x:Name="TbPagina" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <Button x:Name="BtnNext" Content="Próximo ▶" Height="32" Width="100" Click="BtnNext_Click"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button Content="Excluir" Height="36" Width="120" Margin="0,0,8,0" Click="BtnExcluir_Click" FontSize="14" />
+                <Button Content="Atualizar" Height="36" Width="140" Click="BtnAtualizar_Click" FontSize="14" />
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>
