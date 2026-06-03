@@ -1,0 +1,43 @@
+﻿<Window x:Class="Atualizador.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Atualizador"
+        WindowState="Maximized"
+        Background="#F0F0F0">
+
+    <Grid>
+        <DockPanel>
+
+            <!-- MENU LATERAL -->
+            <StackPanel Background="#2C3E50"
+                        Width="200"
+                        DockPanel.Dock="Left">
+
+                <TextBlock Text="MENU"
+                           Foreground="White"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="10"/>
+
+                <Button Content="Configuração"
+                        Margin="10,5"
+                        Height="40"
+                        Click="BtnConfig_Click"/>
+
+                <Button Content="Empresas"
+                        Margin="10,5"
+                        Height="40"
+                        Click="BtnEmpresas_Click"/>
+            </StackPanel>
+
+            <!-- ÁREA DE CONTEÚDO -->
+            <Grid Background="White">
+                <ContentControl x:Name="ContentArea"/>
+            </Grid>
+
+        </DockPanel>
+    </Grid>
+</Window>

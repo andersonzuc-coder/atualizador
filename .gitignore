@@ -1,0 +1,30 @@
+.vs/
+[Dd]ebug*/
+[Rr]elease*/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.suo
+*.cache
+*.log
+*.vsix
+*.pdb
+.vscode/
+packages/
+*.nupkg
+.nuget/
+TestResults/
+*.db
+*.sqlite
+
+# Rider
+.idea/
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
