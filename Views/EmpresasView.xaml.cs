@@ -54,6 +54,15 @@ namespace Atualizador.Views
             CbRegime.ItemsSource = regimesFixos;
             CbRegime.SelectedIndex = -1;
 
+            // popular UFs a partir dos clientes (ou lista padrão)
+            var ufs = _clientes.Select(c => c.Uf).Where(u => !string.IsNullOrEmpty(u)).Distinct().OrderBy(u => u).ToList();
+            if (!ufs.Any())
+            {
+                ufs = new List<string> { "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO" };
+            }
+            CbUf.ItemsSource = ufs;
+            CbUf.SelectedIndex = -1;
+
             DpFrom.SelectedDate = null;
             DpTo.SelectedDate = null;
             TbSearch.Text = string.Empty;
@@ -67,7 +76,9 @@ namespace Atualizador.Views
             var termo = TbSearch.Text?.Trim();
             if (!string.IsNullOrEmpty(termo))
             {
-                lista = lista.Where(c => c.Nome != null && c.Nome.IndexOf(termo, StringComparison.OrdinalIgnoreCase) >= 0);
+                lista = lista.Where(c => (c.Nome != null && c.Nome.IndexOf(termo, StringComparison.OrdinalIgnoreCase) >= 0)
+                                           || c.Codigo.ToString() == termo
+                                           || (c.Cnpj != null && c.Cnpj.IndexOf(termo, StringComparison.OrdinalIgnoreCase) >= 0));
             }
 
             // empresa selecionada
@@ -80,6 +91,11 @@ namespace Atualizador.Views
             if (CbRegime.SelectedItem is string regimeSel)
             {
                 lista = lista.Where(c => c.Regime_Tributario == regimeSel);
+            }
+
+            if (CbUf.SelectedItem is string ufSel)
+            {
+                lista = lista.Where(c => c.Uf == ufSel);
             }
 
             if (DpFrom.SelectedDate.HasValue)

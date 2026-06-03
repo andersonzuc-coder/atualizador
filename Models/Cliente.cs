@@ -19,5 +19,10 @@ namespace Atualizador.Models
         public string Regime_Tributario { get; set; }
 
         public DateTime Data { get; set; }
+
+        // novos campos
+        public string Cnpj { get; set; }
+        public string Uf { get; set; }
+        public byte Comunicacao { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace Atualizador.Data
             {
                 conn.Open();
 
-                var cmd = new MySqlCommand("SELECT * FROM cliente", conn);
+                var cmd = new MySqlCommand("SELECT Codigo, Nome, Admin, Caixa, Copy, Conect, Regime_Tributario, Data, Cnpj, Uf, Comunicacao FROM cliente", conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -36,7 +36,11 @@ namespace Atualizador.Data
                         Caixa = reader["Caixa"] != DBNull.Value && Convert.ToBoolean(reader["Caixa"]),
                         Copy = reader["Copy"] != DBNull.Value && Convert.ToBoolean(reader["Copy"]),
                         Conect = reader["Conect"] != DBNull.Value && Convert.ToBoolean(reader["Conect"]),
-                        Regime_Tributario = reader["Regime_Tributario"] != DBNull.Value ? reader["Regime_Tributario"].ToString() : string.Empty
+                        Regime_Tributario = reader["Regime_Tributario"] != DBNull.Value ? reader["Regime_Tributario"].ToString() : string.Empty,
+                        Data = reader["Data"] != DBNull.Value ? Convert.ToDateTime(reader["Data"]) : DateTime.MinValue,
+                        Cnpj = reader["Cnpj"] != DBNull.Value ? reader["Cnpj"].ToString() : string.Empty,
+                        Uf = reader["Uf"] != DBNull.Value ? reader["Uf"].ToString() : string.Empty,
+                        Comunicacao = reader["Comunicacao"] != DBNull.Value ? Convert.ToByte(reader["Comunicacao"]) : (byte)0
                     });
                 }
             }

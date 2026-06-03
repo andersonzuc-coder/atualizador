@@ -24,6 +24,9 @@
 
                     <TextBlock Text="Regime:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
                     <ComboBox x:Name="CbRegime" Width="200" Margin="4" Height="26" />
+
+                    <TextBlock Text="UF:" VerticalAlignment="Center" Margin="12,4,4,4" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="CbUf" Width="80" Margin="4" Height="26" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,8,0,0">
