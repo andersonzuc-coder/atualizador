@@ -290,12 +290,12 @@ namespace Atualizador.Views
                 var candidates = new List<string>();
                 foreach (var item in mapping.Where(m => m.Flag))
                 {
-                    // procurar arquivos no diretório raiz com nome sem extensão igual a item.Name
+                    // procurar arquivos no diretório raiz que contenham o sufixo _{name} ou terminem com {name}
                     var files = System.IO.Directory.GetFiles(pastaRaiz);
                     foreach (var f in files)
                     {
                         var name = System.IO.Path.GetFileNameWithoutExtension(f);
-                        if (string.Equals(name, item.Name, StringComparison.OrdinalIgnoreCase))
+                        if (name.IndexOf("_" + item.Name, StringComparison.OrdinalIgnoreCase) >= 0 || name.EndsWith(item.Name, StringComparison.OrdinalIgnoreCase))
                             candidates.Add(f);
                     }
                 }
@@ -309,8 +309,24 @@ namespace Atualizador.Views
                     return System.IO.File.GetLastWriteTime(latestExe);
                 }
 
-                var latest = candidates.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
-                return System.IO.File.GetLastWriteTime(latest);
+                // entre os candidatos, tentar extrair a data do nome do arquivo no formato ddMMyyyyHHmm
+                foreach (var f in candidates.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)))
+                {
+                    var name = System.IO.Path.GetFileNameWithoutExtension(f);
+                    // procurar prefixo numérico de 12 dígitos (ddMMyyyyHHmm)
+                    if (name.Length >= 12)
+                    {
+                        var prefix = name.Substring(0, 12);
+                        if (System.Text.RegularExpressions.Regex.IsMatch(prefix, "^\\d{12}$"))
+                        {
+                            if (DateTime.TryParseExact(prefix, "ddMMyyyyHHmm", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var dt))
+                                return dt;
+                        }
+                    }
+                    // se não conseguiu extrair, usar last write time como fallback
+                    return System.IO.File.GetLastWriteTime(f);
+                }
+                return DateTime.MinValue;
             }
             catch
             {
