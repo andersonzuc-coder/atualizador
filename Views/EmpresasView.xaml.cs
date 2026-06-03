@@ -222,8 +222,10 @@ namespace Atualizador.Views
                 cliente.DataVersao = GetExeVersionFileDate(config.PastaRaiz);
                 db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
             }
-
             MessageBox.Show("Atualização enviada com sucesso!");
+
+            // recarregar informações novas após a atualização
+            Carregar();
         }
         private void BtnExcluir_Click(object sender, RoutedEventArgs e)
         {
