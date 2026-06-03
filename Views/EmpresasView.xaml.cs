@@ -295,7 +295,8 @@ namespace Atualizador.Views
                     foreach (var f in files)
                     {
                         var name = System.IO.Path.GetFileNameWithoutExtension(f);
-                        if (name.IndexOf("_" + item.Name, StringComparison.OrdinalIgnoreCase) >= 0 || name.EndsWith(item.Name, StringComparison.OrdinalIgnoreCase))
+                        // aceitar qualquer ocorrência do sufixo (ex: 080420261618_caixa ou caixa) ou nome contido
+                        if (name.IndexOf(item.Name, StringComparison.OrdinalIgnoreCase) >= 0)
                             candidates.Add(f);
                     }
                 }
