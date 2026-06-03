@@ -195,11 +195,16 @@ namespace Atualizador.Views
 
             foreach (var cliente in clientes)
             {
-                // atualizar data_atualizacao apenas se pelo menos um checkbox estiver marcado
+                // atualizar apenas clientes com pelo menos um checkbox marcado
                 if (cliente.Admin || cliente.Caixa || cliente.Copy || cliente.Conect)
                 {
                     cliente.DataAtualizacao = DateTime.Now;
                     db.AtualizarCliente(cliente);
+
+                    // gravar data_versao baseada no arquivo correspondente na pasta raiz
+                    var fileDate = GetFileModificationDateForClient(config.PastaRaiz, cliente);
+                    cliente.DataVersao = fileDate == DateTime.MinValue ? DateTime.Now : fileDate;
+                    db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
                 }
             }
 
@@ -267,21 +272,50 @@ namespace Atualizador.Views
             e.Handled = true;
         }
 
-        private DateTime GetExeVersionFileDate(string pastaRaiz)
+        private DateTime GetFileModificationDateForClient(string pastaRaiz, Cliente cliente)
         {
             try
             {
                 if (string.IsNullOrEmpty(pastaRaiz)) return DateTime.MinValue;
-                // busca arquivo exe ou um arquivo de versão na pasta versao
-                var versaoPath = System.IO.Path.Combine(pastaRaiz, "versao");
-                if (!System.IO.Directory.Exists(versaoPath)) return DateTime.Now;
-                var files = System.IO.Directory.GetFiles(versaoPath);
-                if (files.Length == 0) return DateTime.Now;
-                // escolher o arquivo mais recente
-                var latest = files.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
+
+                // nomes correspondentes aos checkboxes esperados
+                var mapping = new List<(bool Flag, string Name)>
+                {
+                    (cliente.Admin, "admin"),
+                    (cliente.Caixa, "caixa"),
+                    (cliente.Copy, "copy"),
+                    (cliente.Conect, "conect")
+                };
+
+                var candidates = new List<string>();
+                foreach (var item in mapping.Where(m => m.Flag))
+                {
+                    // procurar arquivos no diretório raiz com nome sem extensão igual a item.Name
+                    var files = System.IO.Directory.GetFiles(pastaRaiz);
+                    foreach (var f in files)
+                    {
+                        var name = System.IO.Path.GetFileNameWithoutExtension(f);
+                        if (string.Equals(name, item.Name, StringComparison.OrdinalIgnoreCase))
+                            candidates.Add(f);
+                    }
+                }
+
+                if (!candidates.Any())
+                {
+                    // se não encontrou nenhum arquivo correspondente, tentar pegar qualquer exe na pasta raiz
+                    var exes = System.IO.Directory.GetFiles(pastaRaiz, "*.exe");
+                    if (!exes.Any()) return DateTime.MinValue;
+                    var latestExe = exes.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
+                    return System.IO.File.GetLastWriteTime(latestExe);
+                }
+
+                var latest = candidates.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
                 return System.IO.File.GetLastWriteTime(latest);
             }
-            catch { return DateTime.MinValue; }
+            catch
+            {
+                return DateTime.MinValue;
+            }
         }
     }
 }
