@@ -55,7 +55,7 @@
                 <DataGridCheckBoxColumn Header="Copy" Binding="{Binding Copy}" SortMemberPath="Copy" />
                 <DataGridCheckBoxColumn Header="Conect" Binding="{Binding Conect}" SortMemberPath="Conect" />
                 <DataGridTextColumn Header="Regime" Binding="{Binding Regime_Tributario}" SortMemberPath="Regime_Tributario" Width="160" />
-                <DataGridTextColumn Header="Data" Binding="{Binding Data, StringFormat=d}" SortMemberPath="Data" Width="120" />
+                <DataGridTextColumn Header="Data Atualização" Binding="{Binding DataAtualizacao, StringFormat=d}" SortMemberPath="DataAtualizacao" Width="140" />
             </DataGrid.Columns>
         </DataGrid>
 

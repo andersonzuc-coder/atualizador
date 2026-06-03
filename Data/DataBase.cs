@@ -23,29 +23,67 @@ namespace Atualizador.Data
             {
                 conn.Open();
 
-                var cmd = new MySqlCommand("SELECT Codigo, Nome, Admin, Caixa, Copy, Conect, Regime_Tributario, Data, Cnpj, Uf, Comunicacao FROM cliente", conn);
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                var cmd = new MySqlCommand("SELECT Codigo, Nome, Admin, Caixa, Copy, Conect, Regime_Tributario, data_atualizacao, data_versao, Cnpj, Uf, Comunicacao FROM cliente", conn);
+                using (var reader = cmd.ExecuteReader())
                 {
-                    lista.Add(new Cliente
+                    while (reader.Read())
                     {
-                        Codigo = Convert.ToInt32(reader["Codigo"]),
-                        Nome = reader["Nome"].ToString(),
-                        Admin = reader["Admin"] != DBNull.Value && Convert.ToBoolean(reader["Admin"]),
-                        Caixa = reader["Caixa"] != DBNull.Value && Convert.ToBoolean(reader["Caixa"]),
-                        Copy = reader["Copy"] != DBNull.Value && Convert.ToBoolean(reader["Copy"]),
-                        Conect = reader["Conect"] != DBNull.Value && Convert.ToBoolean(reader["Conect"]),
-                        Regime_Tributario = reader["Regime_Tributario"] != DBNull.Value ? reader["Regime_Tributario"].ToString() : string.Empty,
-                        Data = reader["Data"] != DBNull.Value ? Convert.ToDateTime(reader["Data"]) : DateTime.MinValue,
-                        Cnpj = reader["Cnpj"] != DBNull.Value ? reader["Cnpj"].ToString() : string.Empty,
-                        Uf = reader["Uf"] != DBNull.Value ? reader["Uf"].ToString() : string.Empty,
-                        Comunicacao = reader["Comunicacao"] != DBNull.Value ? Convert.ToByte(reader["Comunicacao"]) : (byte)0
-                    });
+                        lista.Add(new Cliente
+                        {
+                            Codigo = Convert.ToInt32(reader["Codigo"]),
+                            Nome = reader["Nome"].ToString(),
+                            Admin = reader["Admin"] != DBNull.Value && Convert.ToBoolean(reader["Admin"]),
+                            Caixa = reader["Caixa"] != DBNull.Value && Convert.ToBoolean(reader["Caixa"]),
+                            Copy = reader["Copy"] != DBNull.Value && Convert.ToBoolean(reader["Copy"]),
+                            Conect = reader["Conect"] != DBNull.Value && Convert.ToBoolean(reader["Conect"]),
+                            Regime_Tributario = reader["Regime_Tributario"] != DBNull.Value ? reader["Regime_Tributario"].ToString() : string.Empty,
+                            DataAtualizacao = ParseSafeDate(reader, "data_atualizacao"),
+                            DataVersao = ParseSafeDate(reader, "data_versao"),
+                            Cnpj = reader["Cnpj"] != DBNull.Value ? reader["Cnpj"].ToString() : string.Empty,
+                            Uf = reader["Uf"] != DBNull.Value ? reader["Uf"].ToString() : string.Empty,
+                            Comunicacao = reader["Comunicacao"] != DBNull.Value ? Convert.ToByte(reader["Comunicacao"]) : (byte)0
+                        });
+                    }
+
+        public void AtualizarDataVersao(int codigo, DateTime dataVersao)
+        {
+            using (var conn = new MySql.Data.MySqlClient.MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = @"UPDATE cliente SET data_versao = @DataVersao WHERE Codigo = @Codigo";
+                var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@DataVersao", dataVersao == DateTime.MinValue ? (object)DBNull.Value : dataVersao);
+                cmd.Parameters.AddWithValue("@Codigo", codigo);
+                cmd.ExecuteNonQuery();
+            }
+        }
                 }
             }
 
             return lista;
+        }
+
+        private DateTime ParseSafeDate(MySql.Data.MySqlClient.MySqlDataReader reader, string field)
+        {
+            try
+            {
+                if (reader[field] == DBNull.Value)
+                    return DateTime.MinValue;
+
+                var val = reader[field];
+                if (val is DateTime dt)
+                    return dt;
+
+                DateTime parsed;
+                if (DateTime.TryParse(val.ToString(), out parsed))
+                    return parsed;
+
+                return DateTime.MinValue;
+            }
+            catch
+            {
+                return DateTime.MinValue;
+            }
         }
         public void AtualizarCliente(Cliente c)
         {
@@ -58,7 +96,8 @@ namespace Atualizador.Data
                         Caixa = @Caixa,
                         Copy = @Copy,
                         Conect = @Conect,
-                        Regime_Tributario = @Regime_tributario
+                        Regime_Tributario = @Regime_tributario,
+                        data_atualizacao = @DataAtualizacao
                        WHERE Codigo = @Codigo";
 
                 var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn);
@@ -69,6 +108,7 @@ namespace Atualizador.Data
                 cmd.Parameters.AddWithValue("@Conect", c.Conect);
                 cmd.Parameters.AddWithValue("@Codigo", c.Codigo);
                 cmd.Parameters.AddWithValue("@Regime_tributario", c.Regime_Tributario);
+                cmd.Parameters.AddWithValue("@DataAtualizacao", c.DataAtualizacao == DateTime.MinValue ? (object)DBNull.Value : c.DataAtualizacao);
 
                 cmd.ExecuteNonQuery();
             }

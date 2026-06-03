@@ -195,6 +195,8 @@ namespace Atualizador.Views
 
             foreach (var cliente in clientes)
             {
+                // atualizar data_atualizacao para data atual
+                cliente.DataAtualizacao = DateTime.Now;
                 db.AtualizarCliente(cliente);
             }
 
@@ -210,6 +212,13 @@ namespace Atualizador.Views
 
             // 🔹 executa atualização
             service.AtualizarClientes(clientes, config.PastaRaiz, config.PastaNuvem);
+
+            // após execução, gravar data_versao baseado na pasta versao raiz
+            foreach (var cliente in clientes)
+            {
+                cliente.DataVersao = GetExeVersionDate(config.PastaRaiz);
+                db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
+            }
 
             MessageBox.Show("Atualização enviada com sucesso!");
         }
@@ -251,6 +260,21 @@ namespace Atualizador.Views
 
             GridClientes.ItemsSource = sorted.ToList();
             e.Handled = true;
+        }
+
+        private DateTime GetExeVersionDate(string pastaRaiz)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(pastaRaiz)) return DateTime.MinValue;
+                var versaoPath = System.IO.Path.Combine(pastaRaiz, "versao", "version.txt");
+                if (!System.IO.File.Exists(versaoPath)) return DateTime.MinValue;
+                var content = System.IO.File.ReadAllText(versaoPath).Trim();
+                DateTime dt;
+                if (DateTime.TryParse(content, out dt)) return dt;
+                return DateTime.MinValue;
+            }
+            catch { return DateTime.MinValue; }
         }
     }
 }

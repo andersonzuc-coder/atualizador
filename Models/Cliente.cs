@@ -17,10 +17,11 @@ namespace Atualizador.Models
         public bool Conect { get; set; }
 
         public string Regime_Tributario { get; set; }
+        // data de atualização (campo data_atualizacao no banco)
+        public DateTime DataAtualizacao { get; set; }
 
-        public DateTime Data { get; set; }
-
-        // novos campos
+        // data da versão do exe (campo data_versao no banco)
+        public DateTime DataVersao { get; set; }
         public string Cnpj { get; set; }
         public string Uf { get; set; }
         public byte Comunicacao { get; set; }
