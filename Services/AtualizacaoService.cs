@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Atualizador.Services
@@ -29,15 +30,52 @@ namespace Atualizador.Services
 
         private void CopiarExe(string origem, string destino, int codigo, string tipo)
         {
-            string arquivoOrigem = Path.Combine(origem, $"{tipo}.exe");
-            string arquivoDestino = Path.Combine(destino, $"{codigo}_{tipo}.exe");
-
-            // 🔹 valida se o exe existe
-            if (!File.Exists(arquivoOrigem))
+            // procurar arquivos na pasta origem que contenham o token do tipo (ex: 080420261618_caixa.exe ou caixa.exe)
+            if (!Directory.Exists(origem))
             {
-                System.Windows.MessageBox.Show($"Arquivo não encontrado: {arquivoOrigem}");
+                System.Windows.MessageBox.Show($"Pasta de origem não encontrada: {origem}");
                 return;
             }
+
+            var files = Directory.GetFiles(origem, "*.exe");
+            var candidates = files.Where(f => Path.GetFileNameWithoutExtension(f).IndexOf(tipo, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+
+            if (!candidates.Any())
+            {
+                System.Windows.MessageBox.Show($"Arquivo não encontrado para tipo '{tipo}' em: {origem}");
+                return;
+            }
+
+            // escolher melhor candidato: tentar extrair prefixo ddMMyyyyHHmm e ordenar por essa data; fallback para LastWriteTime
+            string arquivoOrigem = null;
+            var best = candidates
+                .Select(f =>
+                {
+                    var name = Path.GetFileNameWithoutExtension(f);
+                    DateTime dt = File.GetLastWriteTime(f);
+                    if (name.Length >= 12)
+                    {
+                        var prefix = name.Substring(0, 12);
+                        if (Regex.IsMatch(prefix, "^\\d{12}$"))
+                        {
+                            if (DateTime.TryParseExact(prefix, "ddMMyyyyHHmm", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var parsed))
+                                dt = parsed;
+                        }
+                    }
+                    return new { File = f, Date = dt };
+                })
+                .OrderByDescending(x => x.Date)
+                .FirstOrDefault();
+
+            arquivoOrigem = best?.File;
+
+            if (string.IsNullOrEmpty(arquivoOrigem) || !File.Exists(arquivoOrigem))
+            {
+                System.Windows.MessageBox.Show($"Arquivo não encontrado: {Path.Combine(origem, tipo + ".exe")} (candidatos: {candidates.Count})");
+                return;
+            }
+
+            string arquivoDestino = Path.Combine(destino, $"{codigo}_{tipo}.exe");
 
             // 🔹 cria pasta destino se não existir
             if (!Directory.Exists(destino))
