@@ -44,7 +44,11 @@
         <DataGrid x:Name="GridClientes" AutoGenerateColumns="False" Grid.Row="1" SelectionChanged="GridClientes_SelectionChanged" CanUserSortColumns="True" Sorting="GridClientes_Sorting" AlternatingRowBackground="#F7F7F7" RowBackground="White" GridLinesVisibility="None" Margin="0,4,0,4" CanUserAddRows="False" RowHeight="28">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" SortMemberPath="Codigo" FontSize="14" Width="80"/>
-                <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" SortMemberPath="Nome" FontSize="14" Width="400" />
+                <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" SortMemberPath="Nome" FontSize="14" Width="300" />
+
+                <DataGridTextColumn Header="CNPJ" Binding="{Binding Cnpj}" SortMemberPath="Cnpj" Width="160" />
+                <DataGridTextColumn Header="UF" Binding="{Binding Uf}" SortMemberPath="Uf" Width="60" />
+                <DataGridTextColumn Header="Comunicacao" Binding="{Binding Comunicacao}" SortMemberPath="Comunicacao" Width="90" />
 
                 <DataGridCheckBoxColumn Header="Admin" Binding="{Binding Admin}" SortMemberPath="Admin" />
                 <DataGridCheckBoxColumn Header="Caixa" Binding="{Binding Caixa}" SortMemberPath="Caixa" />
