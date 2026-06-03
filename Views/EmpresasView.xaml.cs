@@ -100,12 +100,12 @@ namespace Atualizador.Views
 
             if (DpFrom.SelectedDate.HasValue)
             {
-                lista = lista.Where(c => c.Data >= DpFrom.SelectedDate.Value);
+                lista = lista.Where(c => c.DataAtualizacao >= DpFrom.SelectedDate.Value);
             }
 
             if (DpTo.SelectedDate.HasValue)
             {
-                lista = lista.Where(c => c.Data <= DpTo.SelectedDate.Value);
+                lista = lista.Where(c => c.DataAtualizacao <= DpTo.SelectedDate.Value);
             }
 
             // aplicar paginação sobre a lista filtrada
@@ -174,8 +174,8 @@ namespace Atualizador.Views
             if (CbEmpresa.SelectedItem is Cliente selEmpresa) lista = lista.Where(c => c.Codigo == selEmpresa.Codigo);
             // regime selection for pagination reapply
             if (CbRegime.SelectedItem is string regimeSel2) lista = lista.Where(c => c.Regime_Tributario == regimeSel2);
-            if (DpFrom.SelectedDate.HasValue) lista = lista.Where(c => c.Data >= DpFrom.SelectedDate.Value);
-            if (DpTo.SelectedDate.HasValue) lista = lista.Where(c => c.Data <= DpTo.SelectedDate.Value);
+            if (DpFrom.SelectedDate.HasValue) lista = lista.Where(c => c.DataAtualizacao >= DpFrom.SelectedDate.Value);
+            if (DpTo.SelectedDate.HasValue) lista = lista.Where(c => c.DataAtualizacao <= DpTo.SelectedDate.Value);
 
             var filtrado = lista.ToList();
             _totalPages = (int)Math.Ceiling((double)filtrado.Count / _pageSize);
@@ -195,9 +195,12 @@ namespace Atualizador.Views
 
             foreach (var cliente in clientes)
             {
-                // atualizar data_atualizacao para data atual
-                cliente.DataAtualizacao = DateTime.Now;
-                db.AtualizarCliente(cliente);
+                // atualizar data_atualizacao apenas se pelo menos um checkbox estiver marcado
+                if (cliente.Admin || cliente.Caixa || cliente.Copy || cliente.Conect)
+                {
+                    cliente.DataAtualizacao = DateTime.Now;
+                    db.AtualizarCliente(cliente);
+                }
             }
 
 
@@ -216,7 +219,7 @@ namespace Atualizador.Views
             // após execução, gravar data_versao baseado na pasta versao raiz
             foreach (var cliente in clientes)
             {
-                cliente.DataVersao = GetExeVersionDate(config.PastaRaiz);
+                cliente.DataVersao = GetExeVersionFileDate(config.PastaRaiz);
                 db.AtualizarDataVersao(cliente.Codigo, cliente.DataVersao);
             }
 
@@ -224,7 +227,7 @@ namespace Atualizador.Views
         }
         private void BtnExcluir_Click(object sender, RoutedEventArgs e)
         {
-            return ;
+            return;
         }
 
 
@@ -262,17 +265,19 @@ namespace Atualizador.Views
             e.Handled = true;
         }
 
-        private DateTime GetExeVersionDate(string pastaRaiz)
+        private DateTime GetExeVersionFileDate(string pastaRaiz)
         {
             try
             {
                 if (string.IsNullOrEmpty(pastaRaiz)) return DateTime.MinValue;
-                var versaoPath = System.IO.Path.Combine(pastaRaiz, "versao", "version.txt");
-                if (!System.IO.File.Exists(versaoPath)) return DateTime.MinValue;
-                var content = System.IO.File.ReadAllText(versaoPath).Trim();
-                DateTime dt;
-                if (DateTime.TryParse(content, out dt)) return dt;
-                return DateTime.MinValue;
+                // busca arquivo exe ou um arquivo de versão na pasta versao
+                var versaoPath = System.IO.Path.Combine(pastaRaiz, "versao");
+                if (!System.IO.Directory.Exists(versaoPath)) return DateTime.Now;
+                var files = System.IO.Directory.GetFiles(versaoPath);
+                if (files.Length == 0) return DateTime.Now;
+                // escolher o arquivo mais recente
+                var latest = files.OrderByDescending(f => System.IO.File.GetLastWriteTime(f)).First();
+                return System.IO.File.GetLastWriteTime(latest);
             }
             catch { return DateTime.MinValue; }
         }
