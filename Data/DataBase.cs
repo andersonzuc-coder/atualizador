@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Atualizador.Models;
+using MySql.Data.MySqlClient;
 
 namespace Atualizador.Data
 {
-    using Atualizador.Models;
-    using MySql.Data.MySqlClient;
-    using System.Data.SqlClient;
-    using System.Xml.Linq;
-
     public class Database
     {
         private string connectionString = "server=02analise;database=Atualizador;uid=root;pwd=090408;";
@@ -44,26 +41,13 @@ namespace Atualizador.Data
                             Comunicacao = reader["Comunicacao"] != DBNull.Value ? Convert.ToByte(reader["Comunicacao"]) : (byte)0
                         });
                     }
-
-        public void AtualizarDataVersao(int codigo, DateTime dataVersao)
-        {
-            using (var conn = new MySql.Data.MySqlClient.MySqlConnection(connectionString))
-            {
-                conn.Open();
-                string sql = @"UPDATE cliente SET data_versao = @DataVersao WHERE Codigo = @Codigo";
-                var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@DataVersao", dataVersao == DateTime.MinValue ? (object)DBNull.Value : dataVersao);
-                cmd.Parameters.AddWithValue("@Codigo", codigo);
-                cmd.ExecuteNonQuery();
-            }
-        }
                 }
             }
 
             return lista;
         }
 
-        private DateTime ParseSafeDate(MySql.Data.MySqlClient.MySqlDataReader reader, string field)
+        private DateTime ParseSafeDate(MySqlDataReader reader, string field)
         {
             try
             {
@@ -85,9 +69,10 @@ namespace Atualizador.Data
                 return DateTime.MinValue;
             }
         }
+
         public void AtualizarCliente(Cliente c)
         {
-            using (var conn = new MySql.Data.MySqlClient.MySqlConnection(connectionString))
+            using (var conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -100,7 +85,7 @@ namespace Atualizador.Data
                         data_atualizacao = @DataAtualizacao
                        WHERE Codigo = @Codigo";
 
-                var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn);
+                var cmd = new MySqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@Admin", c.Admin);
                 cmd.Parameters.AddWithValue("@Caixa", c.Caixa);
@@ -110,6 +95,21 @@ namespace Atualizador.Data
                 cmd.Parameters.AddWithValue("@Regime_tributario", c.Regime_Tributario);
                 cmd.Parameters.AddWithValue("@DataAtualizacao", c.DataAtualizacao == DateTime.MinValue ? (object)DBNull.Value : c.DataAtualizacao);
 
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void AtualizarDataVersao(int codigo, DateTime dataVersao)
+        {
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = @"UPDATE cliente SET data_versao = @DataVersao WHERE Codigo = @Codigo";
+                var cmd = new MySqlCommand(sql, conn);
+                // se não foi possível determinar a data da versão, usar a data atual
+                var dataParaGravar = dataVersao == DateTime.MinValue ? DateTime.Now : dataVersao;
+                cmd.Parameters.AddWithValue("@DataVersao", dataParaGravar);
+                cmd.Parameters.AddWithValue("@Codigo", codigo);
                 cmd.ExecuteNonQuery();
             }
         }
