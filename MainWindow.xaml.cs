@@ -8,6 +8,8 @@ namespace Atualizador
         public MainWindow()
         {
             InitializeComponent();
+            // abrir automaticamente a tela de Empresas ao iniciar o sistema
+            ContentArea.Content = new EmpresasView();
         }
 
         private void BtnConfig_Click(object sender, RoutedEventArgs e)
